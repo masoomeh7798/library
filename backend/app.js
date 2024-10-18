@@ -6,6 +6,7 @@ import morgan from 'morgan'
 import {fileURLToPath} from 'url'
 import path from 'path'
 import uploadRouter from './Routes/Upload.js'
+import authRouter from './Routes/Auth.js'
 
 const __filename=fileURLToPath(import.meta.url)
 export const __dirname=path.dirname(__filename)
@@ -19,6 +20,7 @@ app.use(express.static('Public'))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use('/api/upload',uploadRouter)
+app.use('/api/auth',authRouter)
 
 app.use('*',(req,res,next)=>{
     return next(new handleError('Route not found',401))
