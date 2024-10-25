@@ -5,7 +5,7 @@ const useFormFields=()=>{
         const {target}=e
         setFields({
             ...fields,
-            [target?.name]:target?.value
+            [target.name]:target.value
         })
 
     }

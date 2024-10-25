@@ -7,6 +7,10 @@ const categorySchema=new mongoose.Schema({
     subCategory:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category'
+    },
+    isActive:{
+        type:Boolean,
+        default:[]
     }
 
 },{timestamps:true})

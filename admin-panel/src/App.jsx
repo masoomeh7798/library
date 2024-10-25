@@ -1,39 +1,61 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Auth from './Pages/Auth';
-import AdminPanel from './Components/AdminPanel';
-import CategoryCRUD from './Pages/Categories/CategoryCRUD';
-import CreateCategory from './Pages/Categories/CreateCategory';
-import UpdateCategory from './Pages/Categories/UpdateCategory';
-import GetAllCategories from './Pages/Categories/GetAllCategories';
-import GetOneCategory from './Pages/Categories/GetOneCategory';
-import Dashboard from './components/Dashboard';
-import { CssBaseline } from '@mui/material';
-import { Toaster } from 'react-hot-toast';
-import Login from './Pages/Auth/Login';
-import Register from './Pages/Auth/Register';
-import Home from './Pages/Home';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import DashboardLayout from './Components/DashboardLayout';
+import CategoriesPage from './Pages/Category/CategoriesPage';
+import CreateCategoryPage from './Pages/Category/CreateCategoryPage';
+import UpdateCategoryPage from './Pages/Category/UpdateCategoryPage';
+import CategoryDetailPage from './Pages/Category/CategoryDetailPage';
+// import { login } from './Store/Slice/AuthSlice.js';
+// Import book and user Pages similarly...
 
+import LoginPage from './Pages/Auth/Login';
+import RegisterPage from './Pages/Auth/Register';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from './Store/Slice/AuthSlice';
+import notify from './Utils/notify';
+import { Toaster } from 'react-hot-toast';
+
+function PrivateRoute({ children }) {
+  const {user}=useSelector(state=>state.auth)
+  let role=user?.role
+  const dispatch=useDispatch()
+  if( role=='admin' || role=='superAdmin'){
+    return children
+  }else{
+    dispatch(logout())
+    notify('error','you are not admin')
+    return <Navigate to={'/login'}/>
+  }
+}
 
 function App() {
+
+
+  
   return (
     <>
-    <CssBaseline/>
     <Routes>
-        <Route exact path="/"  element={<Home/>} />
-        <Route exact path="/auth"  element={<Auth/>} />
-        <Route exact path="/login"  element={<Login/>} />
-        <Route exact path="/register"  element={<Register/>} />
-        <Route path="/admin" element={<AdminPanel/>} />
-        <Route path="/admin/dashboard" element={<Dashboard/>} />
-        <Route path="/admin/categories" element={<CategoryCRUD/>} />
-        <Route path="/admin/categories/create" element={<CreateCategory/>} />
-        <Route path="/admin/categories/update/:id" element={<UpdateCategory/>} />
-        <Route path="/admin/categories/all" element={<GetAllCategories/>} />
-        <Route path="/admin/categories/:id" element={<GetOneCategory/>} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route exact path="/" element={<PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>} />
+
+      {/* Category Routes */}
+      <Route path="/categories" element={<PrivateRoute><DashboardLayout><CategoriesPage /></DashboardLayout></PrivateRoute>} />
+      <Route path="/category/create" element={<PrivateRoute><DashboardLayout><CreateCategoryPage /></DashboardLayout></PrivateRoute>} />
+      <Route path="/category/update/:id" element={<PrivateRoute><DashboardLayout><UpdateCategoryPage /></DashboardLayout></PrivateRoute>} />
+      <Route path="/category/:id" element={<PrivateRoute><DashboardLayout><CategoryDetailPage /></DashboardLayout></PrivateRoute>} />
+
+      {/* Book Routes */}
+      {/* Add Book routes similarly... */}
+      {/* <Route path="/books" element={<PrivateRoute><DashboardLayout><Book /></DashboardLayout></PrivateRoute>} />
+      <Route path="/book/create" element={<PrivateRoute><DashboardLayout><CreateBook /></DashboardLayout></PrivateRoute>} />
+      <Route path="/book/update/:id" element={<PrivateRoute><DashboardLayout><UpdateBook /></DashboardLayout></PrivateRoute>} />
+      <Route path="/book/:id" element={<PrivateRoute><DashboardLayout><BookDetail /></DashboardLayout></PrivateRoute>} /> */}
+      {/* User Routes */}
+      {/* Add User routes similarly... */}
     </Routes>
     <Toaster/>
-    </>
+  </>
   );
 }
 
